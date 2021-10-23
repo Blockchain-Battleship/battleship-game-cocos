@@ -30,7 +30,13 @@ export class Board extends Component {
 
     start () {
         this.loadTiles();
-        this.loadShip(SHIP_NAME.BATTLESHIP, {x:1,y:1}, AXIS.Y)
+
+        //Load All Ships on the Board
+        this.loadShip(SHIP_NAME.DESTROYER, {x:1,y:1}, AXIS.Y)
+        this.loadShip(SHIP_NAME.CRUISER, {x:2,y:1}, AXIS.Y)
+        this.loadShip(SHIP_NAME.SUBMARINE, {x:3,y:1}, AXIS.Y)
+        this.loadShip(SHIP_NAME.BATTLESHIP, {x:4,y:1}, AXIS.Y)
+        this.loadShip(SHIP_NAME.CARRIER, {x:5,y:1}, AXIS.Y)
     }
 
     loadTiles = async() =>{

@@ -1,24 +1,22 @@
 
 import { _decorator, Component, Node } from 'cc';
-import {AXIS} from '../Models/CONSTANTS'
-import PlacementLogic  from '../Logic/PlacementLogic';
-import { Vector2 } from '../Models/Models';
+import { Ship } from './Ship';
 const { ccclass, property } = _decorator;
 
 /**
  * Predefined variables
- * Name = Ship
- * DateTime = Mon Oct 18 2021 15:18:47 GMT+0100 (West Africa Standard Time)
+ * Name = Carrier
+ * DateTime = Sat Oct 23 2021 16:38:47 GMT+0100 (West Africa Standard Time)
  * Author = EbubeUd
- * FileBasename = Ship.ts
- * FileBasenameNoExtension = Ship
- * URL = db://assets/scripts/Ship.ts
+ * FileBasename = Carrier.ts
+ * FileBasenameNoExtension = Carrier
+ * URL = db://assets/scripts/Ships/Carrier.ts
  * ManualUrl = https://docs.cocos.com/creator/3.3/manual/en/
  *
  */
  
-@ccclass('Ship')
-export class Ship extends Component {
+@ccclass('Carrier')
+export class Carrier extends Ship {
     // [1]
     // dummy = '';
 
@@ -28,14 +26,6 @@ export class Ship extends Component {
 
     start () {
         // [3]
-    }
-
-    moveShip (pos : Vector2, axis : AXIS) {
-        let {x, y} = PlacementLogic.getPositionFromTileIndex(pos, axis)
-        let zRot = axis == AXIS.Y ? 0 : 90
-        this.node.setPosition(x, y)
-        this.node.setRotationFromEuler(0,0,zRot);
-
     }
 
     // update (deltaTime: number) {
