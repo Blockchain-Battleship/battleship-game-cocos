@@ -1,6 +1,6 @@
 
-import { _decorator, Component, Node } from 'cc';
-import PlacementLogic from '../Logic/PlacementLogic'
+import { _decorator, Component, Node, Color, CCObject, Sprite } from 'cc';
+import GameLogic from '../Logic/GameLogic'
 import { Vector2 } from '../Models/Models';
 const { ccclass, property } = _decorator;
 
@@ -18,12 +18,8 @@ const { ccclass, property } = _decorator;
  
 @ccclass('Tile')
 export class Tile extends Component {
-    // [1]
-    // dummy = '';
-
-    // [2]
-    // @property
-    // serializableDummy = 0;
+    
+    is_occupied : Boolean
 
     start () {
         // [3]
@@ -34,8 +30,14 @@ export class Tile extends Component {
     // }
 
     setTilePosition = (pos : Vector2) => {
-       let {x, y} =  PlacementLogic.getPositionFromTileIndex(pos);
+       let {x, y} =  GameLogic.getPositionFromCoordinates(pos);
         this.node.setPosition(x,y)        
+    }
+
+    setTileAsOccupied() {
+        let _sprite : Sprite = this.node.getComponent("cc.Sprite")
+        _sprite.color = new Color(255, 0, 0, 60);
+        this.is_occupied = true
     }
 }
 

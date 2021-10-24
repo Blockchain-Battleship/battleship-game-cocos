@@ -1,9 +1,11 @@
 
-import { _decorator, Component, Node, resources, instantiate, director} from 'cc';
-import {BOARD_DIMENSION, AXIS, SHIP_NAME} from '../Models/CONSTANTS'
+import { _decorator, Component, Node, resources, instantiate, director, Game} from 'cc';
+import {BOARD_DIMENSION, SHIP_NAME, PATH} from '../Models/CONSTANTS'
+import {AXIS, SHIP_TYPE} from '../Models/Enums'
 import {Tile} from './Tile'
 import {Ship} from '../Ships/Ship'
 import { Vector2 } from '../Models/Models';
+import GameLogic from '../Logic/GameLogic';
 const { ccclass, property } = _decorator;
 
 /**
@@ -26,17 +28,16 @@ export class Board extends Component {
     // [2]
     // @property
     // serializableDummy = 0;
-    tiles = {}
+    tiles = {number: Tile}
+    has_loaded_tiles : Boolean = false
+    has_loaded_ships : Boolean = false
 
     start () {
         this.loadTiles();
 
-        //Load All Ships on the Board
-        this.loadShip(SHIP_NAME.DESTROYER, {x:1,y:1}, AXIS.Y)
-        this.loadShip(SHIP_NAME.CRUISER, {x:2,y:1}, AXIS.Y)
-        this.loadShip(SHIP_NAME.SUBMARINE, {x:3,y:1}, AXIS.Y)
-        this.loadShip(SHIP_NAME.BATTLESHIP, {x:4,y:1}, AXIS.Y)
-        this.loadShip(SHIP_NAME.CARRIER, {x:5,y:1}, AXIS.Y)
+
+     
+
     }
 
     loadTiles = async() =>{
@@ -46,37 +47,77 @@ export class Board extends Component {
         {
             for(var y = 1; y <= BOARD_DIMENSION.Y; y++)
             {
+                GameLogic.getTileIndexFromCordinates({x,y})
                 this.loadTile({x,y})
             }
         }
     }
 
+    loadShips = () => 
+    {
+        console.log(this.tiles)
+        //Load All Ships on the Board
+        this.loadShip(PATH.DESTROYER, {x:1,y:1}, AXIS.Y, SHIP_TYPE.DESTROYER)
+        this.loadShip(PATH.SUBMARINE, {x:3,y:1}, AXIS.Y, SHIP_TYPE.SUBMARINE)
+        this.loadShip(PATH.CRUISER, {x:2,y:1}, AXIS.Y, SHIP_TYPE.CRUISER)
+        this.loadShip(PATH.BATTLESHIP, {x:4,y:1}, AXIS.Y, SHIP_TYPE.BATTLESHIP)
+        this.loadShip(PATH.CARRIER, {x:5,y:1}, AXIS.Y, SHIP_TYPE.CARRIER)
+    }
+
     loadTile = (position : Vector2) => 
     {
         var self = this;
-        resources.load("prefabs/tile", function (err, prefab) {
+        var tileIndex = GameLogic.getTileIndexFromCordinates(position)
+        resources.load(PATH.TILE, function (err, prefab) {
             var newNode : Scene | Node = instantiate(prefab);
             var tileComponent : Tile = newNode.getComponent(Tile)
             tileComponent.setTilePosition(position);
             self.node.addChild(newNode);
+            self.tiles[tileIndex] = tileComponent;
+            if(tileIndex == 100)
+            {
+                self.loadShips()
+            }
         });
     }
 
-    loadShip = (shipType : String, position : PositionModel, axis: AXIS) => 
+    loadShip = (path : string, position : Vector2, axis: AXIS, ship_type: SHIP_TYPE) => 
     {
         var self = this;
-        resources.load(`prefabs/ships/${shipType}`, function (err, prefab) {
+        resources.load(path, function (err, prefab) {
             var newNode : Scene | Node = instantiate(prefab);
             var shipComponent : Ship = newNode.getComponent(Ship)
-            console.log("Ship Comp", shipComponent)
-            shipComponent.moveShip(position, axis);
+            shipComponent.initShip(ship_type);
+            self.placeShip(shipComponent, position, axis)
             self.node.addChild(newNode);
         });
     }
 
-    // update (deltaTime: number) {
-    //     // [4]
-    // }
+    placeShip = (ship : Ship, pos : Vector2, axis : AXIS) => 
+    {
+        //get the index tile 
+        let indexTile = GameLogic.getTileIndexFromCordinates(pos);
+        console.log(ship.ship_type)
+        let occupiedTiles = GameLogic.getOccupiedTiles(indexTile, axis, ship.ship_type);
+        this.lockTiles(occupiedTiles)
+        ship.moveShip(pos, axis);
+    }
+
+    lockTiles(_tiles : number[]) : void{
+        console.log(_tiles)
+        for(var i = 0; i< _tiles.length; i++)
+        {
+            console.log(`Tile is for ${_tiles[i]}`, this.tiles[_tiles[i]])
+            this.tiles[_tiles[i]].setTileAsOccupied()
+        }
+    }
+
+
+    
+
+    //  update (deltaTime: number) {
+      
+    //  }
 }
 
 /**

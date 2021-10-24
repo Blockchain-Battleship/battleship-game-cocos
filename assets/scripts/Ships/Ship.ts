@@ -1,7 +1,7 @@
 
-import { _decorator, Component, Node } from 'cc';
-import {AXIS} from '../Models/CONSTANTS'
-import PlacementLogic  from '../Logic/PlacementLogic';
+import { _decorator, Component, Node, director } from 'cc';
+import {AXIS, SHIP_TYPE} from '../Models/Enums'
+import GameLogic  from '../Logic/GameLogic';
 import { Vector2 } from '../Models/Models';
 const { ccclass, property } = _decorator;
 
@@ -26,16 +26,26 @@ export class Ship extends Component {
     // @property
     // serializableDummy = 0;
 
+    ship_type : SHIP_TYPE
+    ship_name : string
+    ship_size : number
+
     start () {
         // [3]
     }
 
+    initShip(_ship_type : SHIP_TYPE)
+    {
+        this.ship_type = _ship_type;
+        this.ship_name = GameLogic.getShipName(_ship_type);
+        this.ship_size = GameLogic.getShipTileSize(_ship_type)
+    }
+
     moveShip (pos : Vector2, axis : AXIS) {
-        let {x, y} = PlacementLogic.getPositionFromTileIndex(pos, axis)
+        let {x, y} = GameLogic.getPositionFromCoordinates(pos, axis)
         let zRot = axis == AXIS.Y ? 0 : 90
         this.node.setPosition(x, y)
         this.node.setRotationFromEuler(0,0,zRot);
-
     }
 
     // update (deltaTime: number) {
