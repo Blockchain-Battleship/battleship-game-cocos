@@ -4,6 +4,7 @@ import GameLogic from '../Logic/GameLogic'
 import { Vector2 } from '../Models/Models';
 import { SHIP_TYPE } from '../Models/Enums';
 import { Ship } from '../Ships/Ship';
+import { Gamemanager } from '../Management/Gamemanager';
 const { ccclass, property } = _decorator;
 
 /**
@@ -33,17 +34,36 @@ export class Tile extends Component {
     start () {
         // [3]
         let self = this;
+
+    
+
+
         this.node.on(Node.EventType.MOUSE_ENTER, function (event) {
             console.log(self.occupyingShip);
           }, this);
 
         this.node.on(Node.EventType.MOUSE_DOWN, function(event){
+            Gamemanager.lastClickedTile = self.tile_id
             if(self.is_occupied && self.occupyingShip){
                 self.occupyingShip.setDragPoint(self.tile_id)
             }else{
                 console.log("No ship is occupying this space")
             }
         })
+
+        this.node.on(Node.EventType.MOUSE_UP, function(event){
+            if(Gamemanager.lastClickedTile == self.tile_id)
+            {
+                if(self.is_occupied && self.occupyingShip)
+                {
+                    console.log("rotate ship")
+                }
+            }else{
+                console.log("Might want to check If we were dragging a ship")
+            }
+        })
+
+
     }
 
     // update (deltaTime: number) {
