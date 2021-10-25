@@ -33,7 +33,7 @@ export class Tile extends Component {
         // [3]
 
         this.node.on(Node.EventType.MOUSE_ENTER, function (event) {
-            console.log(this.tile_id);
+            console.log(this.occupyingShip);
           }, this);
     }
 
@@ -44,6 +44,7 @@ export class Tile extends Component {
     init(tileIndex : number){
         this.tile_id = tileIndex
         this.coordinates = GameLogic.getCoordinatesFromTileIndex(tileIndex)
+        this.occupyingShip = SHIP_TYPE.NONE
     }
 
     setTilePosition = (pos : Vector2) => {

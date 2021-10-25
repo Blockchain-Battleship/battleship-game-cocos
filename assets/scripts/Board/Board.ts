@@ -95,14 +95,14 @@ export class Board extends Component {
         //get the index tile 
         let indexTile = GameLogic.getTileIndexFromCordinates(pos);
         let occupiedTiles = GameLogic.getOccupiedTiles(indexTile, axis, ship.ship_type);
-        this.lockTiles(occupiedTiles)
+        this.lockTiles(occupiedTiles,ship.ship_type)
         ship.moveShip(pos, axis);
     }
 
-    lockTiles(_tiles : number[]) : void{
+    lockTiles(_tiles : number[], shipType : SHIP_TYPE) : void{
         for(var i = 0; i< _tiles.length; i++)
         {
-            this.tiles[_tiles[i]].setTileAsOccupied()
+            this.tiles[_tiles[i]].setTileAsOccupied(shipType)
         }
     }
 
