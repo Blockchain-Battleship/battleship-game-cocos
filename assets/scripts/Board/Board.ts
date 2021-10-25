@@ -6,7 +6,7 @@ import {Tile} from './Tile'
 import {Ship} from '../Ships/Ship'
 import { Vector2 } from '../Models/Models';
 import GameLogic from '../Logic/GameLogic';
-import { PubSub } from '../Lib/PubSub';
+import { publish, subscribe } from '../Lib/PubSub';
 const { ccclass, property } = _decorator;
 
 /**
@@ -34,9 +34,9 @@ export class Board extends Component {
     has_loaded_ships : Boolean = false
 
     start () {
-        this.loadShips();
-        //Subscribe the load ship function
-        //PubSub.subscribe("load_ships", this.loadShips())
+        this.loadTiles();
+        subscribe(EVENT_NAMES.BEGIN_LOADING_SHIPS, this.loadShips)
+        subscribe(EVENT_NAMES.BEGIN_DISPLAYING_TILES, this.displayTiles)
     }
 
     loadTiles = async() =>{
@@ -72,12 +72,9 @@ export class Board extends Component {
             var tileComponent : Tile = newNode.getComponent(Tile)
             tileComponent.init(tileIndex);
             tileComponent.setTilePosition(position);
-            self.node.addChild(newNode);
+            //self.node.addChild(newNode);
             self.tiles[tileIndex] = tileComponent;
-            if(tileIndex == 100)
-            {
-                self.loadShips()
-            }
+            publish(EVENT_NAMES.TILE_LOADED, tileIndex)
         });
     }
 
@@ -90,7 +87,7 @@ export class Board extends Component {
             shipComponent.initShip(ship_type);
             self.placeShip(shipComponent, position, axis)
             self.node.addChild(newNode);
-            PubSub.publish(EVENT_NAMES.SHIP_LOADED, ship_type);
+            publish(EVENT_NAMES.SHIP_LOADED, ship_type);
         });
     }
 
@@ -100,7 +97,7 @@ export class Board extends Component {
         let indexTile = GameLogic.getTileIndexFromCordinates(pos);
         console.log(ship.ship_type)
         let occupiedTiles = GameLogic.getOccupiedTiles(indexTile, axis, ship.ship_type);
-        //this.lockTiles(occupiedTiles)
+        this.lockTiles(occupiedTiles)
         ship.moveShip(pos, axis);
     }
 
@@ -110,6 +107,14 @@ export class Board extends Component {
         {
             console.log(`Tile is for ${_tiles[i]}`, this.tiles[_tiles[i]])
             this.tiles[_tiles[i]].setTileAsOccupied()
+        }
+    }
+
+    displayTiles = () : void => {
+        for(var i = 1; i<=100; i++)
+        {
+            console.log(this.tiles)
+            this.node.addChild(this.tiles[i].node)
         }
     }
 

@@ -31,6 +31,9 @@ export const SHIP_TILE_SIZE = {
 }
 
 export const EVENT_NAMES = {
-    SHIP_LOADED: "SHIP_LOADED",
-    TILE_LOADED: "TILE_LOADED"
+    BEGIN_LOADING_SHIPS: "begin_loading_ships",
+    BEGIN_LOADING_TILES: "begin_loading_tiles",
+    BEGIN_DISPLAYING_TILES: "begin_displaying_tiles",
+    SHIP_LOADED: "ship_loaded",
+    TILE_LOADED: "tile_loaded"
 }

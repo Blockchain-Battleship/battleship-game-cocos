@@ -1,6 +1,6 @@
 
 import { _decorator, Component, Node } from 'cc';
-import { PubSub } from '../Lib/PubSub';
+import { publish, subscribe } from '../Lib/PubSub';
 import { SHIP_TYPE } from '../Models/Enums';
 import { EVENT_NAMES } from '../Models/CONSTANTS';
 const { ccclass, property } = _decorator;
@@ -26,19 +26,34 @@ export class Gamemanager extends Component {
     // @property
     // serializableDummy = 0;
     @property
-    static shipsLoaded : number = 0 
+    static shipsLoaded: number = 0 
+    static tilesLoaded: number = 0
 
     start () {
-       PubSub.subscribe(EVENT_NAMES.SHIP_LOADED, this.onShipLoaded)
+       subscribe(EVENT_NAMES.SHIP_LOADED, this.onShipLoaded)
+       subscribe(EVENT_NAMES.TILE_LOADED, this.onTileLoaded)
     }
 
-    onShipLoaded(shipType : SHIP_TYPE){
+
+
+    onTileLoaded = (tileId: number) => {
+        let self = Gamemanager
+        self.tilesLoaded++;
+        if(self.tilesLoaded == 100)
+        {
+            console.log("Done loading tiles, now loading ships")
+            publish(EVENT_NAMES.BEGIN_LOADING_SHIPS)
+        }
+    }
+
+    onShipLoaded = (shipType : SHIP_TYPE) => {
         let self = Gamemanager
         self.shipsLoaded++;
         if(self.shipsLoaded == 5)
         {
-            //Publish an event to load the ships
-            console.log("Load the ships")
+            //Publish an event to display the tiles
+            console.log("Done loading ships, now displaying tiles ");
+            publish(EVENT_NAMES.BEGIN_DISPLAYING_TILES)
         }
     }
 

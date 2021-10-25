@@ -1,23 +1,24 @@
-export class PubSub
+  export class  PubSubRegistry
 {
     static registry = {};
-
-    static publish = function(name: string, ...args: any) {
-        if (!this.registry[name]) return;
-
-        this.registry[name].forEach(x => {
-            x.apply(null, args);
-        });
-    };
-
-
-     static subscribe = function(name: string, fn: any) {
-        if (!this.registry[name]) {
-            this.registry[name] = [fn];
-        } else {
-            this.registry[name].push(fn);
-        }
-    };
 }
 
- 
+let pub = function(name: string, ...args: any) {
+    if (!PubSubRegistry.registry[name]) return;
+
+    PubSubRegistry.registry[name].forEach(x => {
+        x.apply(null, args);
+    });
+};
+
+
+let sub = function(name: string, fn: any) {
+    if (!PubSubRegistry.registry[name]) {
+        PubSubRegistry.registry[name] = [fn];
+    } else {
+        PubSubRegistry.registry[name].push(fn);
+    }
+};
+
+export const publish = pub
+export const subscribe = sub
