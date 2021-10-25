@@ -54,7 +54,6 @@ export class Board extends Component {
 
     loadShips = () => 
     {
-        console.log(this.tiles)
         //Load All Ships on the Board
         this.loadShip(PATH.DESTROYER, {x:1,y:1}, AXIS.Y, SHIP_TYPE.DESTROYER)
         this.loadShip(PATH.SUBMARINE, {x:3,y:1}, AXIS.Y, SHIP_TYPE.SUBMARINE)
@@ -95,7 +94,6 @@ export class Board extends Component {
     {
         //get the index tile 
         let indexTile = GameLogic.getTileIndexFromCordinates(pos);
-        console.log(ship.ship_type)
         let occupiedTiles = GameLogic.getOccupiedTiles(indexTile, axis, ship.ship_type);
         this.lockTiles(occupiedTiles)
         ship.moveShip(pos, axis);
@@ -105,7 +103,6 @@ export class Board extends Component {
         console.log(_tiles)
         for(var i = 0; i< _tiles.length; i++)
         {
-            console.log(`Tile is for ${_tiles[i]}`, this.tiles[_tiles[i]])
             this.tiles[_tiles[i]].setTileAsOccupied()
         }
     }
@@ -113,7 +110,6 @@ export class Board extends Component {
     displayTiles = () : void => {
         for(var i = 1; i<=100; i++)
         {
-            console.log(this.tiles)
             this.node.addChild(this.tiles[i].node)
         }
     }
