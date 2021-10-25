@@ -24,6 +24,7 @@ export default class GameLogic
     static getPositionFromTileIndex(tileIndex: number, axis : AXIS = AXIS.Y) : Vector2 
     {
         let coordinates = this.getCoordinatesFromTileIndex(tileIndex);
+        return coordinates
     }
 
     static getTileIndexFromCordinates(cordinates : Vector2) : number 

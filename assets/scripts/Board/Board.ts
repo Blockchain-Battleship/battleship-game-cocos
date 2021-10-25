@@ -34,10 +34,6 @@ export class Board extends Component {
 
     start () {
         this.loadTiles();
-
-
-     
-
     }
 
     loadTiles = async() =>{
@@ -71,6 +67,7 @@ export class Board extends Component {
         resources.load(PATH.TILE, function (err, prefab) {
             var newNode : Scene | Node = instantiate(prefab);
             var tileComponent : Tile = newNode.getComponent(Tile)
+            tileComponent.init(tileIndex);
             tileComponent.setTilePosition(position);
             self.node.addChild(newNode);
             self.tiles[tileIndex] = tileComponent;

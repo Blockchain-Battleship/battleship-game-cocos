@@ -2,6 +2,7 @@
 import { _decorator, Component, Node, Color, CCObject, Sprite } from 'cc';
 import GameLogic from '../Logic/GameLogic'
 import { Vector2 } from '../Models/Models';
+import { SHIP_TYPE } from '../Models/Enums';
 const { ccclass, property } = _decorator;
 
 /**
@@ -19,7 +20,14 @@ const { ccclass, property } = _decorator;
 @ccclass('Tile')
 export class Tile extends Component {
     
+    //Tile Detials
+    tile_id  : number
+    coordinates : Vector2
+
+    //Occupant Details
     is_occupied : Boolean
+    occupyingShip: SHIP_TYPE
+
 
     start () {
         // [3]
@@ -28,6 +36,12 @@ export class Tile extends Component {
     // update (deltaTime: number) {
     //     // [4]
     // }
+
+    init(tileIndex : number){
+        this.tile_id = tileIndex
+        this.coordinates = GameLogic.getCoordinatesFromTileIndex(tileIndex)
+        console.log("Initialized tile #", tileIndex)
+    }
 
     setTilePosition = (pos : Vector2) => {
        let {x, y} =  GameLogic.getPositionFromCoordinates(pos);
