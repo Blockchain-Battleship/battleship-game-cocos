@@ -3,6 +3,8 @@ import { _decorator, Component, Node, director } from 'cc';
 import {AXIS, SHIP_TYPE} from '../Models/Enums'
 import GameLogic  from '../Logic/GameLogic';
 import { Vector2 } from '../Models/Models';
+import { publish } from '../Lib/PubSub';
+import { EVENT_NAMES } from '../Models/CONSTANTS';
 const { ccclass, property } = _decorator;
 
 /**
@@ -30,7 +32,10 @@ export class Ship extends Component {
     ship_name: string
     ship_size: number
     currentTileIndex: number
+    currentAxis: AXIS
     distanceBtDragPointAndShipOrigin: number
+    occupiedLocations: number[]
+    newTileIndex: number //The new tile index that is occupied by the ship on drag.
 
     start () {
         // [3]
@@ -45,7 +50,7 @@ export class Ship extends Component {
 
     moveShip (pos : Vector2, axis : AXIS) {
         let tileIndex = GameLogic.getTileIndexFromCordinates(pos);
-        this.currentTileIndex = tileIndex;
+        this.newTileIndex = tileIndex;
         let {x, y} = GameLogic.getPositionFromCoordinates(pos, axis)
         let zRot = axis == AXIS.Y ? 0 : 90
         this.node.setPosition(x, y)
@@ -56,6 +61,26 @@ export class Ship extends Component {
         this.distanceBtDragPointAndShipOrigin = clickedTileIndex - this.currentTileIndex;
         console.log("The distance is ", this.distanceBtDragPointAndShipOrigin)
     }
+
+    rotateShip(toggle: boolean, axis : AXIS = null)
+    {
+        let pos = GameLogic.getCoordinatesFromTileIndex(this.currentTileIndex)
+        if(toggle)
+        {
+            let newAxis = this.currentAxis == AXIS.X ? AXIS.Y : AXIS.X
+            this.moveShip(pos, newAxis)
+        }else{
+            this.moveShip(pos, axis)
+        }
+    }
+
+    dropShip(){
+        this.occupiedLocations = GameLogic.getOccupiedTiles(this.newTileIndex, this.currentAxis, this.ship_type);
+        this.currentTileIndex = this.newTileIndex;
+        publish(EVENT_NAMES.SHIP_DROPPED, this)
+    }
+
+
 
 
 

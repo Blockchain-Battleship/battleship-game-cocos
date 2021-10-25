@@ -35,5 +35,6 @@ export const EVENT_NAMES = {
     BEGIN_LOADING_TILES: "begin_loading_tiles",
     BEGIN_DISPLAYING_TILES: "begin_displaying_tiles",
     SHIP_LOADED: "ship_loaded",
-    TILE_LOADED: "tile_loaded"
+    TILE_LOADED: "tile_loaded",
+    SHIP_DROPPED: "ship_dropped"
 }
