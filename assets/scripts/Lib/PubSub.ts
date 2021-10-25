@@ -1,4 +1,4 @@
-export class EventHandler
+export class PubSub
 {
     static registry = {};
 

@@ -6,6 +6,7 @@ import {Tile} from './Tile'
 import {Ship} from '../Ships/Ship'
 import { Vector2 } from '../Models/Models';
 import GameLogic from '../Logic/GameLogic';
+import { PubSub } from '../Lib/PubSub';
 const { ccclass, property } = _decorator;
 
 /**
