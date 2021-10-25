@@ -100,7 +100,6 @@ export class Board extends Component {
     }
 
     lockTiles(_tiles : number[]) : void{
-        console.log(_tiles)
         for(var i = 0; i< _tiles.length; i++)
         {
             this.tiles[_tiles[i]].setTileAsOccupied()

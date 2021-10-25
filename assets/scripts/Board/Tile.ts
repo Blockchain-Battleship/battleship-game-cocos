@@ -31,6 +31,10 @@ export class Tile extends Component {
 
     start () {
         // [3]
+
+        this.node.on(Node.EventType.MOUSE_ENTER, function (event) {
+            console.log(this.tile_id);
+          }, this);
     }
 
     // update (deltaTime: number) {
@@ -40,7 +44,6 @@ export class Tile extends Component {
     init(tileIndex : number){
         this.tile_id = tileIndex
         this.coordinates = GameLogic.getCoordinatesFromTileIndex(tileIndex)
-        console.log("Initialized tile #", tileIndex)
     }
 
     setTilePosition = (pos : Vector2) => {
@@ -48,10 +51,11 @@ export class Tile extends Component {
         this.node.setPosition(x,y)        
     }
 
-    setTileAsOccupied() {
+    setTileAsOccupied(occupyingShip: SHIP_TYPE) {
         let _sprite : Sprite = this.node.getComponent("cc.Sprite")
         _sprite.color = new Color(255, 0, 0, 60);
         this.is_occupied = true
+        this.occupyingShip = occupyingShip
     }
 }
 
