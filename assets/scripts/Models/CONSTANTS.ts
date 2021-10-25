@@ -29,3 +29,8 @@ export const SHIP_TILE_SIZE = {
     BATTLESHIP: 4,
     CARRIER: 5,
 }
+
+export const EVENT_NAMES = {
+    SHIP_LOADED: "SHIP_LOADED",
+    TILE_LOADED: "TILE_LOADED"
+}

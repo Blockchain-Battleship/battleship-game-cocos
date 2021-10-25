@@ -1,6 +1,6 @@
 
 import { _decorator, Component, Node, resources, instantiate, director, Game} from 'cc';
-import {BOARD_DIMENSION, SHIP_NAME, PATH} from '../Models/CONSTANTS'
+import {BOARD_DIMENSION, SHIP_NAME, PATH, EVENT_NAMES} from '../Models/CONSTANTS'
 import {AXIS, SHIP_TYPE} from '../Models/Enums'
 import {Tile} from './Tile'
 import {Ship} from '../Ships/Ship'
@@ -34,7 +34,9 @@ export class Board extends Component {
     has_loaded_ships : Boolean = false
 
     start () {
-        this.loadTiles();
+        this.loadShips();
+        //Subscribe the load ship function
+        //PubSub.subscribe("load_ships", this.loadShips())
     }
 
     loadTiles = async() =>{
@@ -88,6 +90,7 @@ export class Board extends Component {
             shipComponent.initShip(ship_type);
             self.placeShip(shipComponent, position, axis)
             self.node.addChild(newNode);
+            PubSub.publish(EVENT_NAMES.SHIP_LOADED, ship_type);
         });
     }
 
@@ -97,7 +100,7 @@ export class Board extends Component {
         let indexTile = GameLogic.getTileIndexFromCordinates(pos);
         console.log(ship.ship_type)
         let occupiedTiles = GameLogic.getOccupiedTiles(indexTile, axis, ship.ship_type);
-        this.lockTiles(occupiedTiles)
+        //this.lockTiles(occupiedTiles)
         ship.moveShip(pos, axis);
     }
 

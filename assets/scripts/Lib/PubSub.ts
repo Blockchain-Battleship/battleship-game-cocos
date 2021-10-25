@@ -2,7 +2,7 @@ export class PubSub
 {
     static registry = {};
 
-    publish = function(name: string, ...args: any) {
+    static publish = function(name: string, ...args: any) {
         if (!this.registry[name]) return;
 
         this.registry[name].forEach(x => {
@@ -11,7 +11,7 @@ export class PubSub
     };
 
 
-     subscribe = function(name: string, fn: any) {
+     static subscribe = function(name: string, fn: any) {
         if (!this.registry[name]) {
             this.registry[name] = [fn];
         } else {
