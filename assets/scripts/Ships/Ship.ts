@@ -26,9 +26,11 @@ export class Ship extends Component {
     // @property
     // serializableDummy = 0;
 
-    ship_type : SHIP_TYPE
-    ship_name : string
-    ship_size : number
+    ship_type: SHIP_TYPE
+    ship_name: string
+    ship_size: number
+    currentTileIndex: number
+    distanceBtDragPointAndShipOrigin: number
 
     start () {
         // [3]
@@ -42,11 +44,20 @@ export class Ship extends Component {
     }
 
     moveShip (pos : Vector2, axis : AXIS) {
+        let tileIndex = GameLogic.getTileIndexFromCordinates(pos);
+        this.currentTileIndex = tileIndex;
         let {x, y} = GameLogic.getPositionFromCoordinates(pos, axis)
         let zRot = axis == AXIS.Y ? 0 : 90
         this.node.setPosition(x, y)
         this.node.setRotationFromEuler(0,0,zRot);
     }
+
+    setDragPoint(clickedTileIndex: number){
+        this.distanceBtDragPointAndShipOrigin = clickedTileIndex - this.currentTileIndex;
+        console.log("The distance is ", this.distanceBtDragPointAndShipOrigin)
+    }
+
+
 
     // update (deltaTime: number) {
     //     // [4]

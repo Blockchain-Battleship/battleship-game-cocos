@@ -110,4 +110,8 @@ export default class GameLogic
 
         return ship_name;
     }
+
+    getNewTileIndexOnShipMove(shipType: SHIP_TYPE, newClickArea: number, axis: AXIS){
+
+    }
 }

@@ -3,6 +3,7 @@ import { _decorator, Component, Node, Color, CCObject, Sprite } from 'cc';
 import GameLogic from '../Logic/GameLogic'
 import { Vector2 } from '../Models/Models';
 import { SHIP_TYPE } from '../Models/Enums';
+import { Ship } from '../Ships/Ship';
 const { ccclass, property } = _decorator;
 
 /**
@@ -26,15 +27,23 @@ export class Tile extends Component {
 
     //Occupant Details
     is_occupied : Boolean
-    occupyingShip: SHIP_TYPE
+    occupyingShip: Ship
 
 
     start () {
         // [3]
-
+        let self = this;
         this.node.on(Node.EventType.MOUSE_ENTER, function (event) {
-            console.log(this.occupyingShip);
+            console.log(self.occupyingShip);
           }, this);
+
+        this.node.on(Node.EventType.MOUSE_DOWN, function(event){
+            if(self.is_occupied && self.occupyingShip){
+                self.occupyingShip.setDragPoint(self.tile_id)
+            }else{
+                console.log("No ship is occupying this space")
+            }
+        })
     }
 
     // update (deltaTime: number) {
@@ -44,7 +53,7 @@ export class Tile extends Component {
     init(tileIndex : number){
         this.tile_id = tileIndex
         this.coordinates = GameLogic.getCoordinatesFromTileIndex(tileIndex)
-        this.occupyingShip = SHIP_TYPE.NONE
+        this.occupyingShip = null
     }
 
     setTilePosition = (pos : Vector2) => {
@@ -52,11 +61,16 @@ export class Tile extends Component {
         this.node.setPosition(x,y)        
     }
 
-    setTileAsOccupied(occupyingShip: SHIP_TYPE) {
+    setTileAsOccupied(occupyingShip: Ship) {
         let _sprite : Sprite = this.node.getComponent("cc.Sprite")
         _sprite.color = new Color(255, 0, 0, 60);
         this.is_occupied = true
         this.occupyingShip = occupyingShip
+    }
+
+    setTileAsFree(){
+        this.is_occupied = false
+        this.occupyingShip = null
     }
 }
 

@@ -28,6 +28,7 @@ export class Gamemanager extends Component {
     @property
     static shipsLoaded: number = 0 
     static tilesLoaded: number = 0
+    static isDraggingShip: boolean = false
 
     start () {
        subscribe(EVENT_NAMES.SHIP_LOADED, this.onShipLoaded)
