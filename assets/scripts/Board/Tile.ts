@@ -44,6 +44,7 @@ export class Tile extends Component {
         this.node.on(Node.EventType.MOUSE_DOWN, function(event){
             Gamemanager.lastClickedTile = self.tile_id
             Gamemanager.activeShip = self.occupyingShip
+            Gamemanager.isMouseMoved = false
             if(self.is_occupied && self.occupyingShip){
                 self.occupyingShip.setDragPoint(self.tile_id)
                 Gamemanager.isDraggingShip = true;
@@ -73,6 +74,11 @@ export class Tile extends Component {
 
             Gamemanager.isDraggingShip = false;
             Gamemanager.activeShip = null
+        })
+
+        this.node.on(Node.EventType.MOUSE_MOVE, function(event)
+        {
+            Gamemanager.isMouseMoved = true
         })
 
       
