@@ -48,7 +48,6 @@ export class Tile extends Component {
                 self.occupyingShip.setDragPoint(self.tile_id)
                 Gamemanager.isDraggingShip = true;
             }else{
-                console.log("No ship is occupying this space")
             }
         })
 

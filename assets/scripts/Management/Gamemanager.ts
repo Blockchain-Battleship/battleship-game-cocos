@@ -48,7 +48,6 @@ export class Gamemanager extends Component {
         self.tilesLoaded++;
         if(self.tilesLoaded == 100)
         {
-            console.log("Done loading tiles, now loading ships")
             publish(EVENT_NAMES.BEGIN_LOADING_SHIPS)
         }
     }
@@ -59,7 +58,6 @@ export class Gamemanager extends Component {
         if(self.shipsLoaded == 5)
         {
             //Publish an event to display the tiles
-            console.log("Done loading ships, now displaying tiles ");
             publish(EVENT_NAMES.BEGIN_DISPLAYING_TILES)
         }
     }
@@ -71,7 +69,6 @@ export class Gamemanager extends Component {
 
         if(self.tilesDisplayed == 100)
         {
-            console.log("Displayed all tiles, now dropping ships")
             publish(EVENT_NAMES.BEGIN_DROPPING_SHIPS)
         }
     }

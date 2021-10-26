@@ -33,8 +33,12 @@ export class Board extends Component {
     ships = {SHIP_TYPE: Ship}
     has_loaded_tiles : Boolean = false
     has_loaded_ships : Boolean = false
+    minTile: number
+    maxTile: number
 
     start () {
+        this.minTile = 1
+        this.maxTile = BOARD_DIMENSION.X * BOARD_DIMENSION.Y
         this.loadTiles();
         subscribe(EVENT_NAMES.BEGIN_LOADING_SHIPS, this.loadShips)
         subscribe(EVENT_NAMES.BEGIN_DISPLAYING_TILES, this.displayTiles)

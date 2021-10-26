@@ -8,6 +8,7 @@ import { EVENT_NAMES } from '../Models/CONSTANTS';
 import { sleep } from '../Lib/Threading';
 import { Tile } from '../Board/Tile';
 import { Board } from '../Board/Board';
+import Logger from '../Lib/Logger';
 const { ccclass, property } = _decorator;
 
 /**
@@ -66,7 +67,7 @@ export class Ship extends Component {
 
     setDragPoint(clickedTileIndex: number){
         this.distanceBtDragPointAndShipOrigin = clickedTileIndex - this.currentTileIndex;
-        console.log("The distance is ", this.distanceBtDragPointAndShipOrigin)
+        Logger.log("The distance is ", this.distanceBtDragPointAndShipOrigin)
     }
 
     rotateShip(toggle: boolean, axis : AXIS = null)
@@ -88,7 +89,7 @@ export class Ship extends Component {
         let occupiedLocations = GameLogic.getOccupiedTiles(this.newTileIndex, this.currentAxis, this.ship_type);
         this.occupiedTiles = this.board.getTiles(occupiedLocations);
         this.currentTileIndex = this.newTileIndex;
-        console.log("Locations", occupiedLocations)
+        Logger.log("Locations", occupiedLocations)
         this.occupyNewTiles(this.occupiedTiles)
         publish(EVENT_NAMES.SHIP_DROPPED, this.occupiedTiles)
     }
@@ -101,7 +102,7 @@ export class Ship extends Component {
     }
 
     occupyNewTiles(newTiles: Tile[]){
-        console.log(newTiles)
+        Logger.log(newTiles)
         for(var i = 0; i < newTiles.length; i++)
         {
             newTiles[i].setTileAsOccupied(this)
@@ -117,6 +118,27 @@ export class Ship extends Component {
     moveShipOndrag(tileOnCursor: number){
         let newOrigin = this.getNewShipOriginOnDrag(tileOnCursor);
         let coordinates = GameLogic.getCoordinatesFromTileIndex(newOrigin);
+        let tilesToOccupy = GameLogic.getOccupiedTiles(newOrigin,this.currentAxis, this.ship_type)
+        
+        //Check if any location is less than the min tile on the board and adjust
+        if(tilesToOccupy[0] < this.board.minTile)
+        {
+            Logger.log("Tiles to Occupy Below:", tilesToOccupy)
+            let diff = this.board.minTile - tilesToOccupy[0]
+            for(var i = 0; i < tilesToOccupy.length; i++){
+                tilesToOccupy[i]+=diff
+            }
+        }
+
+        //check if any location is more than the max tile on the board and adjust
+        if(tilesToOccupy[tilesToOccupy.length-1] > this.board.maxTile){
+            let diff = tilesToOccupy[tilesToOccupy.length-1] - this.board.maxTile
+            Logger.log("Tiles to Occupy Above:", tilesToOccupy)
+            for(var i = 0; i<tilesToOccupy.length; i++)
+            {
+                tilesToOccupy[i] -=diff
+            }
+        }
         this.moveShip(coordinates, this.currentAxis)
     }
 

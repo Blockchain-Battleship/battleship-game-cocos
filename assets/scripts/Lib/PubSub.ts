@@ -13,7 +13,6 @@ let pub = function(name: string, ...args: any) {
 
 
 let sub = function(name: string, fn: any) {
-    if(name == "ship_dropped") console.log("subbed")
     if (!PubSubRegistry.registry[name]) {
         PubSubRegistry.registry[name] = [fn];
     } else {
