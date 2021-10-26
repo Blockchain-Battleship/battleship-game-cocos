@@ -60,6 +60,7 @@ export class Tile extends Component {
                     if(!Gamemanager.isMouseMoved) {
                         //Rotate the ship because the user just clicked on the ship
                         self.occupyingShip.rotateShip(true)
+                        self.occupyingShip.dropShip()
                     }else{
                         //Do Nothing. Just returned the ship back to its previous position
                     }

@@ -38,6 +38,7 @@ export class Ship extends Component {
     ship_size: number
     currentTileIndex: number
     currentAxis: AXIS
+    newAxis: AXIS
     distanceBtDragPointAndShipOrigin: number
     occupiedTiles: Tile[]
     newTileIndex: number //The new tile index that is occupied by the ship on drag.
@@ -62,7 +63,7 @@ export class Ship extends Component {
         let zRot = axis == AXIS.Y ? 0 : 90
         this.node.setPosition(x, y)
         this.node.setRotationFromEuler(0,0,zRot);
-        this.currentAxis = axis
+        this.newAxis = axis
     }
 
     setDragPoint(clickedTileIndex: number){
@@ -76,30 +77,55 @@ export class Ship extends Component {
         {
             let newAxis = this.currentAxis == AXIS.X ? AXIS.Y : AXIS.X
             this.moveShip(pos, newAxis)
-            this.dropShip()
         }else{
             this.moveShip(pos, axis)
-            this.dropShip()
         }
     }
 
     dropShip (){
-        this.freePreviousTiles(this.occupiedTiles)
-        let occupiedLocations = GameLogic.getOccupiedTiles(this.newTileIndex, this.currentAxis, this.ship_type);
-        this.occupiedTiles = this.board.getTiles(occupiedLocations);
-        this.currentTileIndex = this.newTileIndex;
-        this.occupyNewTiles(this.occupiedTiles)
-        publish(EVENT_NAMES.SHIP_DROPPED, this.occupiedTiles)
+        let occupiedLocations = GameLogic.getOccupiedTiles(this.newTileIndex, this.newAxis, this.ship_type);
+        let newTiles : Tile[] = this.board.getTiles(occupiedLocations);
+        let canDropShip = this.canDropShip(newTiles);
+
+        if(!canDropShip)
+        {
+            Logger.log("Can not drop ship, moving ship back to previous location")
+            //Move the ship back to its previous position
+            let coordinates = GameLogic.getCoordinatesFromTileIndex(this.currentTileIndex)
+            this.moveShip(coordinates, this.currentAxis)
+            this.dropShip()
+        }else{
+            Logger.log("Can drop ship. Dropping ship")
+            Logger.log()
+            this.freePreviousTiles(this.occupiedTiles)
+            this.currentTileIndex = this.newTileIndex;
+            this.occupiedTiles = newTiles
+            this.currentAxis = this.newAxis
+            this.occupyNewTiles(this.occupiedTiles)
+            publish(EVENT_NAMES.SHIP_DROPPED, this.occupiedTiles)
+        }
     }
 
-    freePreviousTiles(previousTiles : Tile[]){
+    canDropShip(tiles: Tile[]) : boolean
+    {
+        for(var i = 0; i< tiles.length; i++)
+        {
+            if(tiles[i].is_occupied && tiles[i].occupyingShip.ship_type != this.ship_type)
+            {
+                return false
+            }
+        }
+        return true
+    }
+
+    freePreviousTiles(previousTiles : Tile[]) : void {
         for(var i = 0; i< previousTiles.length; i++)
         {
             previousTiles[i].setTileAsFree()
         }
     }
 
-    occupyNewTiles(newTiles: Tile[]){
+    occupyNewTiles(newTiles: Tile[]) : void {
         for(var i = 0; i < newTiles.length; i++)
         {
             newTiles[i].setTileAsOccupied(this)
@@ -112,7 +138,7 @@ export class Ship extends Component {
         return newShipOrigin;
     }
 
-    moveShipOndrag(tileOnCursor: number){
+    moveShipOndrag(tileOnCursor: number) : void {
         let newOrigin = this.getNewShipOriginOnDrag(tileOnCursor);
         let coordinates = GameLogic.getCoordinatesFromTileIndex(newOrigin);
         let tilesToOccupy = GameLogic.getOccupiedTiles(newOrigin,this.currentAxis, this.ship_type)
