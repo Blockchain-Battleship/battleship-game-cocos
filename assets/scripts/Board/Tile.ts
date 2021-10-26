@@ -91,6 +91,8 @@ export class Tile extends Component {
     }
 
     setTileAsFree(){
+        let _sprite : Sprite = this.node.getComponent("cc.Sprite")
+        _sprite.color = new Color(255, 255, 255, 60);
         this.is_occupied = false
         this.occupyingShip = null
     }

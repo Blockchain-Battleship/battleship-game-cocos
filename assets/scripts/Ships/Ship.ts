@@ -76,8 +76,10 @@ export class Ship extends Component {
         {
             let newAxis = this.currentAxis == AXIS.X ? AXIS.Y : AXIS.X
             this.moveShip(pos, newAxis)
+            this.dropShip()
         }else{
             this.moveShip(pos, axis)
+            this.dropShip()
         }
     }
 
