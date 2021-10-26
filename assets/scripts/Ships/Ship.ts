@@ -3,8 +3,11 @@ import { _decorator, Component, Node, director } from 'cc';
 import {AXIS, SHIP_TYPE} from '../Models/Enums'
 import GameLogic  from '../Logic/GameLogic';
 import { Vector2 } from '../Models/Models';
-import { publish } from '../Lib/PubSub';
+import { publish, subscribe } from '../Lib/PubSub';
 import { EVENT_NAMES } from '../Models/CONSTANTS';
+import { sleep } from '../Lib/Threading';
+import { Tile } from '../Board/Tile';
+import { Board } from '../Board/Board';
 const { ccclass, property } = _decorator;
 
 /**
@@ -28,24 +31,27 @@ export class Ship extends Component {
     // @property
     // serializableDummy = 0;
 
+    board: Board
     ship_type: SHIP_TYPE
     ship_name: string
     ship_size: number
     currentTileIndex: number
     currentAxis: AXIS
     distanceBtDragPointAndShipOrigin: number
-    occupiedLocations: number[]
+    occupiedTiles: Tile[]
     newTileIndex: number //The new tile index that is occupied by the ship on drag.
 
     start () {
         // [3]
     }
 
-    initShip(_ship_type : SHIP_TYPE)
+    init(_ship_type : SHIP_TYPE, _board: Board)
     {
         this.ship_type = _ship_type;
         this.ship_name = GameLogic.getShipName(_ship_type);
         this.ship_size = GameLogic.getShipTileSize(_ship_type)
+        this.board = _board
+        this.occupiedTiles = []
     }
 
     moveShip (pos : Vector2, axis : AXIS) {
@@ -55,6 +61,7 @@ export class Ship extends Component {
         let zRot = axis == AXIS.Y ? 0 : 90
         this.node.setPosition(x, y)
         this.node.setRotationFromEuler(0,0,zRot);
+        this.currentAxis = axis
     }
 
     setDragPoint(clickedTileIndex: number){
@@ -74,10 +81,29 @@ export class Ship extends Component {
         }
     }
 
-    dropShip(){
-        this.occupiedLocations = GameLogic.getOccupiedTiles(this.newTileIndex, this.currentAxis, this.ship_type);
+    dropShip (){
+        this.freePreviousTiles(this.occupiedTiles)
+        let occupiedLocations = GameLogic.getOccupiedTiles(this.newTileIndex, this.currentAxis, this.ship_type);
+        this.occupiedTiles = this.board.getTiles(occupiedLocations);
         this.currentTileIndex = this.newTileIndex;
-        publish(EVENT_NAMES.SHIP_DROPPED, this)
+        console.log("Locations", occupiedLocations)
+        this.occupyNewTiles(this.occupiedTiles)
+        publish(EVENT_NAMES.SHIP_DROPPED, this.occupiedTiles)
+    }
+
+    freePreviousTiles(previousTiles : Tile[]){
+        for(var i = 0; i< previousTiles.length; i++)
+        {
+            previousTiles[i].setTileAsFree()
+        }
+    }
+
+    occupyNewTiles(newTiles: Tile[]){
+        console.log(newTiles)
+        for(var i = 0; i < newTiles.length; i++)
+        {
+            newTiles[i].setTileAsOccupied(this)
+        }
     }
 
 

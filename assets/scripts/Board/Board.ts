@@ -30,6 +30,7 @@ export class Board extends Component {
     // @property
     // serializableDummy = 0;
     tiles = {number: Tile}
+    ships = {SHIP_TYPE: Ship}
     has_loaded_tiles : Boolean = false
     has_loaded_ships : Boolean = false
 
@@ -37,6 +38,7 @@ export class Board extends Component {
         this.loadTiles();
         subscribe(EVENT_NAMES.BEGIN_LOADING_SHIPS, this.loadShips)
         subscribe(EVENT_NAMES.BEGIN_DISPLAYING_TILES, this.displayTiles)
+        subscribe(EVENT_NAMES.BEGIN_DROPPING_SHIPS, this.dropShips)
     }
 
     loadTiles = async() =>{
@@ -83,21 +85,25 @@ export class Board extends Component {
         resources.load(path, function (err, prefab) {
             var newNode : Scene | Node = instantiate(prefab);
             var shipComponent : Ship = newNode.getComponent(Ship)
-            shipComponent.initShip(ship_type);
-            self.placeShip(shipComponent, position, axis)
+            shipComponent.init(ship_type, self);
+
+            let indexTile = GameLogic.getTileIndexFromCordinates(position);
+            //let occupiedTiles = GameLogic.getOccupiedTiles(indexTile, axis, shipComponent.ship_type);
+            //this.lockTiles(occupiedTiles,ship)
+            shipComponent.moveShip(position, axis);
             self.node.addChild(newNode);
+            self.ships[ship_type] = shipComponent;
             publish(EVENT_NAMES.SHIP_LOADED, ship_type);
         });
     }
 
-    placeShip = (ship : Ship, pos : Vector2, axis : AXIS) => 
+    dropShips = () => 
     {
-        //get the index tile 
-        let indexTile = GameLogic.getTileIndexFromCordinates(pos);
-        let occupiedTiles = GameLogic.getOccupiedTiles(indexTile, axis, ship.ship_type);
-        //this.lockTiles(occupiedTiles,ship)
-        ship.moveShip(pos, axis);
-        ship.dropShip();
+        this.ships[SHIP_TYPE.DESTROYER].dropShip()
+        this.ships[SHIP_TYPE.SUBMARINE].dropShip()
+        this.ships[SHIP_TYPE.CRUISER].dropShip()
+        this.ships[SHIP_TYPE.BATTLESHIP].dropShip()
+        this.ships[SHIP_TYPE.CARRIER].dropShip()
     }
 
     lockTiles(_tiles : number[], ship : Ship) : void{
@@ -107,11 +113,22 @@ export class Board extends Component {
         }
     }
 
-    displayTiles = () : void => {
+    displayTiles = () => {
         for(var i = 1; i<=100; i++)
         {
             this.node.addChild(this.tiles[i].node)
+            publish(EVENT_NAMES.TILE_DISPLAYED, i)
         }
+    }
+
+    getTiles = (tileIds: number[]) =>
+    {
+        let result : Tile[] = []
+        for(var i = 0; i < tileIds.length; i++)
+        {
+            result.push(this.tiles[tileIds[i]])
+        }
+        return result
     }
 
 

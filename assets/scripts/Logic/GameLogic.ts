@@ -41,6 +41,7 @@ export default class GameLogic
     }
 
     static getOccupiedTiles(tileIndex: number, axis : AXIS, shipType : SHIP_TYPE) : number[]{
+        console.log(tileIndex, axis, shipType)
         let tileIndexes = [];
         let incrementor;
         let total_tiles = this.getShipTileSize(shipType)
@@ -56,6 +57,7 @@ export default class GameLogic
         for(var i = 0; i < total_tiles; i++)
         {
             let newTile = tileIndex + (incrementor * i)
+            console.log("newTile", tileIndex)
             tileIndexes.push(newTile)
         }
 
@@ -97,6 +99,7 @@ export default class GameLogic
                 break;
             case SHIP_TYPE.SUBMARINE:
                 ship_name =  SHIP_NAME.SUBMARINE;
+                break;
             case SHIP_TYPE.CRUISER:
                 ship_name = SHIP_NAME.CRUISER;
                 break;

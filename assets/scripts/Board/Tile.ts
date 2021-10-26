@@ -36,6 +36,8 @@ export class Tile extends Component {
     start () {
       
         let self = this;
+                //Event Binding
+        //subscribe(EVENT_NAMES.SHIP_DROPPED, this.onShipDropped);
 
         this.node.on(Node.EventType.MOUSE_ENTER, function (event) {
             console.log(self.occupyingShip);
@@ -62,8 +64,7 @@ export class Tile extends Component {
             }
         })
 
-        //Event Binding
-        subscribe(EVENT_NAMES.SHIP_DROPPED, this.onShipDropped)
+      
 
     }
 
@@ -94,30 +95,33 @@ export class Tile extends Component {
         this.occupyingShip = null
     }
 
-    onShipDropped = (ship: Ship) =>{
-        console.log("Checking Ship Pos");
-        //check if the tile Id is currently occuped by another ship
-        if (this.is_occupied)
-        {
-            if(this.occupyingShip.ship_type == ship.ship_type)
-            {
-                //check if this tile is still occupied by the ship
-                if(ship.occupiedLocations.indexOf(this.tile_id) > -1){
-                    this.occupyingShip = ship;
-                }else{
-                    this.setTileAsFree()
-                }
+    // onShipDropped = (ship: Ship) =>{
+    //     console.log("Checking Ship Pos", ship.occupiedLocations);
+
+    //     //check if the tile Id is currently occuped by another ship
+    //     if (this.is_occupied)
+    //     {
+    //         if(this.occupyingShip.ship_type == ship.ship_type)
+    //         {
+    //             //check if this tile is still occupied by the ship
+    //             if(ship.occupiedLocations.indexOf(this.tile_id) > -1){
+    //                 this.occupyingShip = ship;
+    //             }else{
+    //                 this.setTileAsFree()
+    //             }
                 
-            }else{
-                console.log(`${this.tile_id} is occupied by a different ship`)
-            }
-        }else{
-            //check if the tile exists in the list of tiles occupied by this ship
-            if(ship.occupiedLocations.indexOf(this.tile_id) > -1){
-                this.setTileAsOccupied(ship)
-            }
-        }
-    }
+    //         }else{
+    //             console.log(`${this.tile_id} is occupied by a different ship`)
+    //         }
+    //     }else{
+    //         //check if the tile exists in the list of tiles occupied by this ship
+    //         if(ship.occupiedLocations.indexOf(this.tile_id) > -1){
+    //             this.setTileAsOccupied(ship)
+    //         }
+    //     }
+    // }
+
+ 
 }
 
 /**

@@ -3,6 +3,8 @@ import { _decorator, Component, Node } from 'cc';
 import { publish, subscribe } from '../Lib/PubSub';
 import { SHIP_TYPE } from '../Models/Enums';
 import { EVENT_NAMES } from '../Models/CONSTANTS';
+import { sleep } from '../Lib/Threading';
+import { Ship } from '../Ships/Ship';
 const { ccclass, property } = _decorator;
 
 /**
@@ -30,10 +32,12 @@ export class Gamemanager extends Component {
     static tilesLoaded: number = 0
     static isDraggingShip: boolean = false
     static lastClickedTile: number = 0
+    static tilesDisplayed: number = 0
 
     start () {
        subscribe(EVENT_NAMES.SHIP_LOADED, this.onShipLoaded)
        subscribe(EVENT_NAMES.TILE_LOADED, this.onTileLoaded)
+       subscribe(EVENT_NAMES.TILE_DISPLAYED, this.onTileDisplayed)
     }
 
 
@@ -58,6 +62,19 @@ export class Gamemanager extends Component {
             publish(EVENT_NAMES.BEGIN_DISPLAYING_TILES)
         }
     }
+
+    onTileDisplayed = (tileId: number) =>
+    {
+        let self = Gamemanager;
+        self.tilesDisplayed++;
+
+        if(self.tilesDisplayed == 100)
+        {
+            console.log("Displayed all tiles, now dropping ships")
+            publish(EVENT_NAMES.BEGIN_DROPPING_SHIPS)
+        }
+    }
+
 
     // update (deltaTime: number) {
     //     // [4]
