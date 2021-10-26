@@ -3,7 +3,6 @@ import { _decorator, Component, Node } from 'cc';
 import { publish, subscribe } from '../Lib/PubSub';
 import { SHIP_TYPE } from '../Models/Enums';
 import { EVENT_NAMES } from '../Models/CONSTANTS';
-import { sleep } from '../Lib/Threading';
 import { Ship } from '../Ships/Ship';
 const { ccclass, property } = _decorator;
 
@@ -33,6 +32,7 @@ export class Gamemanager extends Component {
     static isDraggingShip: boolean = false
     static lastClickedTile: number = 0
     static tilesDisplayed: number = 0
+    static activeShip: Ship = null
 
     start () {
        subscribe(EVENT_NAMES.SHIP_LOADED, this.onShipLoaded)

@@ -2,11 +2,8 @@
 import { _decorator, Component, Node, Color, CCObject, Sprite } from 'cc';
 import GameLogic from '../Logic/GameLogic'
 import { Vector2 } from '../Models/Models';
-import { SHIP_TYPE } from '../Models/Enums';
 import { Ship } from '../Ships/Ship';
 import { Gamemanager } from '../Management/Gamemanager';
-import { publish, subscribe } from '../Lib/PubSub';
-import { EVENT_NAMES } from '../Models/CONSTANTS';
 const { ccclass, property } = _decorator;
 
 /**
@@ -36,17 +33,20 @@ export class Tile extends Component {
     start () {
       
         let self = this;
-                //Event Binding
-        //subscribe(EVENT_NAMES.SHIP_DROPPED, this.onShipDropped);
 
         this.node.on(Node.EventType.MOUSE_ENTER, function (event) {
-            console.log(self.occupyingShip);
+            //Check if we are dragging a ship
+            if(Gamemanager.isDraggingShip){
+                Gamemanager.activeShip.moveShipOndrag(this.tile_id)
+            }
           }, this);
 
         this.node.on(Node.EventType.MOUSE_DOWN, function(event){
             Gamemanager.lastClickedTile = self.tile_id
+            Gamemanager.activeShip = self.occupyingShip
             if(self.is_occupied && self.occupyingShip){
                 self.occupyingShip.setDragPoint(self.tile_id)
+                Gamemanager.isDraggingShip = true;
             }else{
                 console.log("No ship is occupying this space")
             }
@@ -60,6 +60,7 @@ export class Tile extends Component {
                     self.occupyingShip.rotateShip(true)
                 }
             }else{
+                
                 console.log("Might want to check If we were dragging a ship")
             }
         })
@@ -97,31 +98,6 @@ export class Tile extends Component {
         this.occupyingShip = null
     }
 
-    // onShipDropped = (ship: Ship) =>{
-    //     console.log("Checking Ship Pos", ship.occupiedLocations);
-
-    //     //check if the tile Id is currently occuped by another ship
-    //     if (this.is_occupied)
-    //     {
-    //         if(this.occupyingShip.ship_type == ship.ship_type)
-    //         {
-    //             //check if this tile is still occupied by the ship
-    //             if(ship.occupiedLocations.indexOf(this.tile_id) > -1){
-    //                 this.occupyingShip = ship;
-    //             }else{
-    //                 this.setTileAsFree()
-    //             }
-                
-    //         }else{
-    //             console.log(`${this.tile_id} is occupied by a different ship`)
-    //         }
-    //     }else{
-    //         //check if the tile exists in the list of tiles occupied by this ship
-    //         if(ship.occupiedLocations.indexOf(this.tile_id) > -1){
-    //             this.setTileAsOccupied(ship)
-    //         }
-    //     }
-    // }
 
  
 }

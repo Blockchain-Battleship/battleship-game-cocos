@@ -108,6 +108,18 @@ export class Ship extends Component {
         }
     }
 
+    getNewShipOriginOnDrag(tileOnCursor: number) : number
+    {
+        let newShipOrigin = tileOnCursor - this.distanceBtDragPointAndShipOrigin;
+        return newShipOrigin;
+    }
+
+    moveShipOndrag(tileOnCursor: number){
+        let newOrigin = this.getNewShipOriginOnDrag(tileOnCursor);
+        let coordinates = GameLogic.getCoordinatesFromTileIndex(newOrigin);
+        this.moveShip(coordinates, this.currentAxis)
+    }
+
 
 
 
