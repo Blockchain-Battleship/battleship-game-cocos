@@ -33,6 +33,7 @@ export class Gamemanager extends Component {
     static lastClickedTile: number = 0
     static tilesDisplayed: number = 0
     static activeShip: Ship = null
+    static isMouseMoved: boolean = false //indicates if the mouse cursor was moved after it was clicked
 
     start () {
        subscribe(EVENT_NAMES.SHIP_LOADED, this.onShipLoaded)

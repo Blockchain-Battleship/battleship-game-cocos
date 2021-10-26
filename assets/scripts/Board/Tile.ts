@@ -57,12 +57,23 @@ export class Tile extends Component {
             {
                 if(self.is_occupied && self.occupyingShip)
                 {
-                    self.occupyingShip.rotateShip(true)
+                    if(!Gamemanager.isMouseMoved) {
+                        //Rotate the ship because the user just clicked on the ship
+                        self.occupyingShip.rotateShip(true)
+                    }else{
+                        //Do Nothing. Just returned the ship back to its previous position
+                    }
                 }
             }else{
-                
-                console.log("Might want to check If we were dragging a ship")
+                //Drop the ship at the correct location if we were dragging it
+                if(Gamemanager.isDraggingShip)
+                {
+                    Gamemanager.activeShip.dropShip();
+                }
             }
+
+            Gamemanager.isDraggingShip = false;
+            Gamemanager.activeShip = null
         })
 
       
