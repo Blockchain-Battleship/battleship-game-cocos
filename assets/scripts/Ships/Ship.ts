@@ -73,14 +73,19 @@ export class Ship extends Component {
     rotateShip(toggle: boolean, axis : AXIS = null)
     {
         let pos = GameLogic.getCoordinatesFromTileIndex(this.currentTileIndex)
-        if(toggle)
-        {
-            let newAxis = this.currentAxis == AXIS.X ? AXIS.Y : AXIS.X
-            this.moveShip(pos, newAxis)
-        }else{
-            this.moveShip(pos, axis)
-        }
+        let newAxis = toggle ? this.currentAxis == AXIS.X ? AXIS.Y : AXIS.X : axis
+        if(!this.canMoveShip(this.currentTileIndex, newAxis)) return;
+        this.moveShip(pos, newAxis)
     }
+
+    moveShipOndrag(tileOnCursor: number) : void {
+        let newOrigin = this.getNewShipOriginOnDrag(tileOnCursor);
+        let coordinates = GameLogic.getCoordinatesFromTileIndex(newOrigin);
+        if(!this.canMoveShip(newOrigin, this.currentAxis)) return
+        this.moveShip(coordinates, this.currentAxis)
+    }
+
+
 
     dropShip (){
         let occupiedLocations = GameLogic.getOccupiedTiles(this.newTileIndex, this.newAxis, this.ship_type);
@@ -101,6 +106,30 @@ export class Ship extends Component {
             this.occupyNewTiles(this.occupiedTiles)
             publish(EVENT_NAMES.SHIP_DROPPED, this.occupiedTiles)
         }
+    }
+
+    canMoveShip(tileIndex: number, axis: AXIS) : boolean{
+        let tilesToOccupy: number[] = GameLogic.getOccupiedTiles(tileIndex,axis, this.ship_type)
+        Logger.log("tiles to occupy", tilesToOccupy)
+        //if(tilesToOccupy[0] < this.board.minTile || tilesToOccupy[tilesToOccupy.length - 1] > this.board.maxTile)  return false;
+        //let coordinates = GameLogic.getCoordinatesFromTileIndex(tileIndex);
+        //if(coordinates.x < 1  || coordinates.y < 1) return false;
+
+        let incrementer = axis == AXIS.X ? 1 : BOARD_DIMENSION.X;
+        let maxTile = tileIndex + (incrementer * (this.ship_size - 1));
+        if(maxTile > this.board.maxTile || tileIndex < 1) return false;
+        if(axis == AXIS.X)
+        {
+            maxTile = maxTile-1;
+            let minTile = tileIndex 
+            let lowerLimit = (minTile - (minTile % BOARD_DIMENSION.X)) / BOARD_DIMENSION.X;
+            let upperLimit = (maxTile - (maxTile % BOARD_DIMENSION.X)) / BOARD_DIMENSION.X;
+            Logger.log("Lower:", lowerLimit, "Upper:", upperLimit)
+            if(lowerLimit != upperLimit) return false;
+        }
+        return true
+
+        return true
     }
 
     canDropShip(tiles: Tile[]) : boolean
@@ -133,15 +162,6 @@ export class Ship extends Component {
     {
         let newShipOrigin = tileOnCursor - this.distanceBtDragPointAndShipOrigin;
         return newShipOrigin;
-    }
-
-    moveShipOndrag(tileOnCursor: number) : void {
-        let newOrigin = this.getNewShipOriginOnDrag(tileOnCursor);
-        let coordinates = GameLogic.getCoordinatesFromTileIndex(newOrigin);
-        let tilesToOccupy = GameLogic.getOccupiedTiles(newOrigin,this.currentAxis, this.ship_type)
-
-        if(tilesToOccupy[0] < this.board.minTile || tilesToOccupy[tilesToOccupy.length - 1] > this.board.maxTile) return
-        this.moveShip(coordinates, this.currentAxis)
     }
 
 
