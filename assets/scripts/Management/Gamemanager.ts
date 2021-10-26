@@ -26,7 +26,10 @@ export class Gamemanager extends Component {
     // [2]
     // @property
     // serializableDummy = 0;
+
     @property
+    isReleaseVersion: boolean = false
+
     static shipsLoaded: number = 0 
     static tilesLoaded: number = 0
     static isDraggingShip: boolean = false

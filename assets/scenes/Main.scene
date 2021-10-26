@@ -338,6 +338,7 @@
       "__id__": 6
     },
     "_enabled": true,
+    "__prefab": null,
     "_id": "44DUyZhBVNhZpGla+/lFRq"
   },
   {
@@ -516,6 +517,8 @@
       "__id__": 15
     },
     "_enabled": true,
+    "__prefab": null,
+    "isReleaseVersion": false,
     "_id": "02SN7oIK9F755/gLOWoRKv"
   },
   {
