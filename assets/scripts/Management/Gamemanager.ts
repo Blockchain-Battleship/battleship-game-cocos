@@ -4,6 +4,7 @@ import { publish, subscribe } from '../Lib/PubSub';
 import { SHIP_TYPE } from '../Models/Enums';
 import { EVENT_NAMES } from '../Models/CONSTANTS';
 import { Ship } from '../Ships/Ship';
+import Logger from '../Lib/Logger';
 const { ccclass, property } = _decorator;
 
 /**
@@ -42,6 +43,7 @@ export class Gamemanager extends Component {
        subscribe(EVENT_NAMES.SHIP_LOADED, this.onShipLoaded)
        subscribe(EVENT_NAMES.TILE_LOADED, this.onTileLoaded)
        subscribe(EVENT_NAMES.TILE_DISPLAYED, this.onTileDisplayed)
+       subscribe(EVENT_NAMES.CURSOR_LEFT_BOARD, this.onCursorLeftBoard)
     }
 
 
@@ -74,6 +76,17 @@ export class Gamemanager extends Component {
         {
             publish(EVENT_NAMES.BEGIN_DROPPING_SHIPS)
         }
+    }
+
+    onCursorLeftBoard = () => 
+    {
+        Logger.log("User Left Board");
+        if(Gamemanager.isDraggingShip)
+        {
+            Gamemanager.activeShip.resetPosition()
+        }
+        Gamemanager.isDraggingShip = false;
+        Gamemanager.activeShip = null
     }
 
 

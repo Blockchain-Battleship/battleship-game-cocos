@@ -39,5 +39,6 @@ export const EVENT_NAMES = {
     TILE_LOADED: "tile_loaded",
     SHIP_DROPPED: "ship_dropped",
     TILE_DISPLAYED: "tile_displayed",
-    TEST: "test"
+    BEGIN_RESET_TILE_COLOR: "begin_reset_tile_color",
+    CURSOR_LEFT_BOARD: "cursor_left_board"
 }

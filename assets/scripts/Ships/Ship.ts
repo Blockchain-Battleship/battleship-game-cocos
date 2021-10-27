@@ -44,7 +44,6 @@ export class Ship extends Component {
     newTileIndex: number //The new tile index that is occupied by the ship on drag.
 
     start () {
-        // [3]
     }
 
     init(_ship_type : SHIP_TYPE, _board: Board)
@@ -82,6 +81,13 @@ export class Ship extends Component {
         let newOrigin = this.getNewShipOriginOnDrag(tileOnCursor);
         let coordinates = GameLogic.getCoordinatesFromTileIndex(newOrigin);
         if(!this.canMoveShip(newOrigin, this.currentAxis)) return
+
+        //Display marker To indicate if its safe to drop ship
+        let occupiedLocations = GameLogic.getOccupiedTiles(newOrigin, this.newAxis, this.ship_type);
+        let newTiles : Tile[] = this.board.getTiles(occupiedLocations);
+        let canDropShip = this.canDropShip(newTiles);
+        newTiles.map(tile => {tile.indicateAccessibility(canDropShip)})
+
         this.moveShip(coordinates, this.currentAxis)
     }
 
@@ -111,25 +117,28 @@ export class Ship extends Component {
     canMoveShip(tileIndex: number, axis: AXIS) : boolean{
         let tilesToOccupy: number[] = GameLogic.getOccupiedTiles(tileIndex,axis, this.ship_type)
         Logger.log("tiles to occupy", tilesToOccupy)
-        //if(tilesToOccupy[0] < this.board.minTile || tilesToOccupy[tilesToOccupy.length - 1] > this.board.maxTile)  return false;
-        //let coordinates = GameLogic.getCoordinatesFromTileIndex(tileIndex);
-        //if(coordinates.x < 1  || coordinates.y < 1) return false;
+        let incrementor = axis == AXIS.X ? 1 : 10
+        let maxTileIndex = tileIndex + (this.ship_size-1) * incrementor
 
-        let incrementer = axis == AXIS.X ? 1 : BOARD_DIMENSION.X;
-        let maxTile = tileIndex + (incrementer * (this.ship_size - 1));
-        if(maxTile > this.board.maxTile || tileIndex < 1) return false;
-        if(axis == AXIS.X)
+        //Ensure that the y axis is within the board
+        if(tileIndex < 1 || maxTileIndex > 100) return false;
+        
+        //Ensure the at the x axis is within the board
+        let coorsMin = GameLogic.getCoordinatesFromTileIndex(tileIndex)
+        let coorsMax = GameLogic.getCoordinatesFromTileIndex(maxTileIndex)
+
+        switch(axis)
         {
-            maxTile = maxTile-1;
-            let minTile = tileIndex 
-            let lowerLimit = (minTile - (minTile % BOARD_DIMENSION.X)) / BOARD_DIMENSION.X;
-            let upperLimit = (maxTile - (maxTile % BOARD_DIMENSION.X)) / BOARD_DIMENSION.X;
-            Logger.log("Lower:", lowerLimit, "Upper:", upperLimit)
-            if(lowerLimit != upperLimit) return false;
+            case AXIS.X:
+                if(coorsMin.y != coorsMax.y) return false
+                break;
+            case AXIS.Y:
+                if(coorsMin.x != coorsMax.x) return false
+                break
         }
-        return true
 
         return true
+       
     }
 
     canDropShip(tiles: Tile[]) : boolean
@@ -162,6 +171,12 @@ export class Ship extends Component {
     {
         let newShipOrigin = tileOnCursor - this.distanceBtDragPointAndShipOrigin;
         return newShipOrigin;
+    }
+
+    resetPosition() : void{
+        let coors = GameLogic.getCoordinatesFromTileIndex(this.currentTileIndex);
+        this.moveShip(coors, this.currentAxis)
+        this.dropShip();
     }
 
 

@@ -8,3 +8,10 @@ export class Vector3{
     y : number;
     z : number;
 }
+
+export class ColorModel{
+    r: number;
+    g: number;
+    b: number;
+    a: number;
+}

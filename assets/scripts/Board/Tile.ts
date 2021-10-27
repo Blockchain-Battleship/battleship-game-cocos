@@ -1,9 +1,11 @@
 
-import { _decorator, Component, Node, Color, CCObject, Sprite } from 'cc';
+import { _decorator, Component, Node, Color, CCObject, Sprite, Pool } from 'cc';
 import GameLogic from '../Logic/GameLogic'
-import { Vector2 } from '../Models/Models';
+import { ColorModel, Vector2 } from '../Models/Models';
 import { Ship } from '../Ships/Ship';
 import { Gamemanager } from '../Management/Gamemanager';
+import { publish, subscribe } from '../Lib/PubSub';
+import { EVENT_NAMES } from '../Models/CONSTANTS';
 const { ccclass, property } = _decorator;
 
 /**
@@ -33,8 +35,12 @@ export class Tile extends Component {
     start () {
       
         let self = this;
-
+        subscribe(EVENT_NAMES.BEGIN_RESET_TILE_COLOR, this.resetTileColor)
+        subscribe(EVENT_NAMES.CURSOR_LEFT_BOARD, this.onCursorLeftBoard)
         this.node.on(Node.EventType.MOUSE_ENTER, function (event) {
+            //Reset Tile Color
+            publish(EVENT_NAMES.BEGIN_RESET_TILE_COLOR)
+
             //Check if we are dragging a ship
             if(Gamemanager.isDraggingShip){
                 Gamemanager.activeShip.moveShipOndrag(this.tile_id)
@@ -53,6 +59,7 @@ export class Tile extends Component {
         })
 
         this.node.on(Node.EventType.MOUSE_UP, function(event){
+            publish(EVENT_NAMES.BEGIN_RESET_TILE_COLOR)
             if(Gamemanager.lastClickedTile == self.tile_id)
             {
                 if(self.is_occupied && self.occupyingShip)
@@ -102,18 +109,38 @@ export class Tile extends Component {
     }
 
     setTileAsOccupied(occupyingShip: Ship) {
-        let _sprite : Sprite = this.node.getComponent("cc.Sprite")
-        _sprite.color = new Color(255, 0, 0, 60);
+        this.setTileColor({r:0, g:0, b:0, a:0})
         this.is_occupied = true
         this.occupyingShip = occupyingShip
     }
 
     setTileAsFree(){
-        let _sprite : Sprite = this.node.getComponent("cc.Sprite")
-        _sprite.color = new Color(255, 255, 255, 60);
+        this.setTileColor({r:0, g:0, b:0, a:0})
         this.is_occupied = false
         this.occupyingShip = null
     }
+
+    indicateAccessibility(isAccessible: boolean){
+        let{green, red} = isAccessible? {green: 255, red: 0} : {green: 0, red: 255};
+        this.setTileColor({r:red, g:green, b:0, a:60})
+    }
+
+    setTileColor(col: ColorModel)
+    {
+        let _sprite : Sprite = this.node.getComponent("cc.Sprite")
+        _sprite.color = new Color(col.r, col.g, col.b, col.a);
+    }
+
+    resetTileColor = () =>{
+        this.setTileColor({r:0, g:0, b:0, a:0})
+    }
+
+    onCursorLeftBoard = () => 
+    {
+        this.resetTileColor()
+    }
+
+
 
 
  
