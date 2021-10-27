@@ -101,9 +101,7 @@ export class Ship extends Component {
         if(!canDropShip)
         {
             //Move the ship back to its previous position
-            let coordinates = GameLogic.getCoordinatesFromTileIndex(this.currentTileIndex)
-            this.moveShip(coordinates, this.currentAxis)
-            this.dropShip()
+           this.resetPosition()
         }else{
             this.freePreviousTiles(this.occupiedTiles)
             this.currentTileIndex = this.newTileIndex;
